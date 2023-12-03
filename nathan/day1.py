@@ -1,13 +1,5 @@
-import os
 from helpers.get_file_contents import get_file_contents
 # Get the current working directory
-current_directory = os.getcwd()
-
-# Specify the relative path to your file
-relative_path = "advent_of_code_2023/input.txt"
-
-# Join the current directory with the relative path to get the full path
-full_path = os.path.join(current_directory, relative_path)
 
 numbers_spelled_set = [
     "one",
@@ -62,7 +54,7 @@ def cb(file_contents):
 
 
 def start():
-    get_file_contents("input.txt", cb)
+    get_file_contents("inputs/day1.txt", cb)
 
 
 start()

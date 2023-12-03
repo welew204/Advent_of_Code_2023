@@ -94,8 +94,8 @@ def part_2(file_contents):
 
 
 def start():
-    get_file_contents("input_day2.txt", part_1)
-    get_file_contents("input_day2.txt", part_2)
+    get_file_contents("inputs/day2.txt", part_1)
+    get_file_contents("inputs/day2.txt", part_2)
 
 
 start()
