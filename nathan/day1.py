@@ -1,5 +1,4 @@
 from helpers.get_file_contents import get_file_contents
-# Get the current working directory
 
 numbers_spelled_set = [
     "one",

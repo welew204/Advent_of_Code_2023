@@ -7,6 +7,18 @@ class TestDay3(unittest.TestCase):
         """
         Test that a method sorts a list in place
         """
-        data = [6, 21, 3, 0, -1]
-        result = day3()
-        self.assertEqual(result, sorted(data))
+        data = [
+            "467..114..",
+            "...*......",
+            "..35..633.",
+            "......#...",
+            "617*......",
+            ".....+.58.",
+            "..592.....",
+            "......755.",
+            "...$.*....",
+            ".664.598..",
+        ]
+        result = day3(data)
+        expected_result = 4361
+        self.assertEqual(result, expected_result)
