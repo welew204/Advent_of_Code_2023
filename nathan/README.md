@@ -1,5 +1,5 @@
 ## Run tests
 
 ```bash
-python -m unittest test_day3.py
+python -m unittest tests/test_day3.py
 ```
