@@ -2,12 +2,6 @@ from helpers.get_file_contents import get_file_contents
 
 dirs = [[1, 0], [-1, 0], [1, 1], [-1, -1], [0, 1], [0, -1], [-1, 1], [1, -1]]
 
-"""
-    - - -
-   - x -
-   - - -
-"""
-
 
 def is_adjacent_to_symbol(char_idx, line_idx, file_contents):
     for d in dirs:
