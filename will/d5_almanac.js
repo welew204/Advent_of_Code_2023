@@ -98,6 +98,25 @@ function give_result(seed, range_array) {
   let destination = range_array.at(i).at(0) + diff;
   return destination;
 }
+function give_rvs_result(lowest_dest, range_array) {
+  // REFACTOR USING NEW PARAM!!! lowest_dest...
+
+  let match = false;
+  let i = 0;
+  while (match === false && i < range_array.length) {
+    let destination = range_array.at(i).at(0);
+    if (seed >= destination && seed < destination + range_array.at(i).at(2)) {
+      match = true;
+      break;
+    } else if (i === range_array.length - 1) {
+      return seed;
+    }
+    i++;
+  }
+  let diff = seed - range_array.at(i).at(1);
+  let destination = range_array.at(i).at(0) + diff;
+  return destination;
+}
 
 // rewrite trace/find:
 // for each seed, look up to see which range the seed falls into (go line by line)
@@ -112,6 +131,40 @@ function simple_trace_find(input_map) {
     let humidity = give_result(temp, input_map["temperature-to-humidity"]);
     let location = give_result(humidity, input_map["humidity-to-location"]);
     res = Math.min(res, location);
+  });
+  return res;
+}
+
+function map_ranges_trace_find(input_map) {
+  /* My plan:
+  # how about just locate lowest location and go backwards?
+  # ....duh?*/
+  let locations = input_map["humidity-to-location"];
+  let lowest_val_loc = Infinity;
+  locations.forEach((loc) => {
+    lowest_val_loc = Math.min(loc[0], lowest_val_loc);
+  });
+  let;
+}
+
+function brute_force_simple_trace_find_all_seeds(input_map) {
+  let res = Infinity;
+  input_map.seeds.forEach((seed, i, seeds) => {
+    console.log(seed);
+    if (i % 2 == 0) {
+      let range = seeds.at(i + 1);
+      for (let i = seed; i <= seed + range; i++) {
+        // Your code here
+        let soil = give_result(seed, input_map["seed-to-soil"]);
+        let fertilizer = give_result(soil, input_map["soil-to-fertilizer"]);
+        let water = give_result(fertilizer, input_map["fertilizer-to-water"]);
+        let light = give_result(water, input_map["water-to-light"]);
+        let temp = give_result(light, input_map["light-to-temperature"]);
+        let humidity = give_result(temp, input_map["temperature-to-humidity"]);
+        let location = give_result(humidity, input_map["humidity-to-location"]);
+        res = Math.min(res, location);
+      }
+    }
   });
   return res;
 }
@@ -144,7 +197,7 @@ fs.readFile(
     }
 
     const puzzle_object = formatString(data);
-    console.log(trace_and_find(puzzle_object));
+    console.log(simple_trace_find_all_seeds(puzzle_object));
     return;
   }
 );
