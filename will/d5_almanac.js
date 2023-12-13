@@ -98,25 +98,6 @@ function give_result(seed, range_array) {
   let destination = range_array.at(i).at(0) + diff;
   return destination;
 }
-function give_rvs_result(lowest_dest, range_array) {
-  // REFACTOR USING NEW PARAM!!! lowest_dest...
-
-  let match = false;
-  let i = 0;
-  while (match === false && i < range_array.length) {
-    let destination = range_array.at(i).at(0);
-    if (seed >= destination && seed < destination + range_array.at(i).at(2)) {
-      match = true;
-      break;
-    } else if (i === range_array.length - 1) {
-      return seed;
-    }
-    i++;
-  }
-  let diff = seed - range_array.at(i).at(1);
-  let destination = range_array.at(i).at(0) + diff;
-  return destination;
-}
 
 // rewrite trace/find:
 // for each seed, look up to see which range the seed falls into (go line by line)
@@ -137,14 +118,63 @@ function simple_trace_find(input_map) {
 
 function map_ranges_trace_find(input_map) {
   /* My plan:
-  # how about just locate lowest location and go backwards?
-  # ....duh?*/
-  let locations = input_map["humidity-to-location"];
-  let lowest_val_loc = Infinity;
-  locations.forEach((loc) => {
-    lowest_val_loc = Math.min(loc[0], lowest_val_loc);
-  });
-  let;
+  - go thru seeds, grab start and end (exclusive)
+  - map range-lines to ints
+  - treat seeds as a queue (just pop items)
+  - unpack these ints for comparison to seed start/end
+  --> determine overlap-start and overlap-end
+  --> if there is NOT an overlap, add the non-overlapping item 
+  - then treat newSource as seeds, and iterate through next block
+  */
+  let seeds = input_map["seeds"]
+    .map((s, idx, sds) => {
+      if (idx % 2 === 0) {
+        return [s, s + sds.at(idx + 1)];
+      }
+    })
+    .filter((element) => element != undefined);
+  let blocks = [
+    input_map["seed-to-soil"],
+    input_map["fertilizer-to-water"],
+    input_map["water-to-light"],
+    input_map["light-to-temperature"],
+    input_map["temperature-to-humidity"],
+    input_map["humidity-to-location"],
+  ];
+  let flag;
+  let newSource;
+  for (let block of blocks) {
+    newSource = [];
+    while (seeds.length > 0) {
+      flag = false;
+      let [s, e] = seeds.pop();
+      for (let line of block) {
+        let [a, b, c] = line;
+        let os = Math.max(b, s);
+        let oe = Math.min(b + c, e);
+        if (os < oe) {
+          // so if the ranges overlap
+          newSource.push([os - b + a, oe - b + a]);
+          if (os > s) {
+            // so the s of the range preceeds the overlap (aka, b is the os)
+            // add the non-overlapping hunk back to the seeds to check shit
+            seeds.push([s, os]);
+          }
+          if (e > oe) {
+            seeds.push([oe, e]);
+          }
+          flag = true;
+          break;
+        }
+      }
+      if (flag == false) {
+        newSource.push([s, e]);
+      }
+    }
+    seeds = newSource;
+  }
+  const starts = seeds.map((item) => item.at(0));
+  return Math.min(...starts);
 }
 
 function brute_force_simple_trace_find_all_seeds(input_map) {
@@ -185,6 +215,44 @@ function trace_and_find(input_map) {
   return res;
 }
 
+const sample_output_correct = {
+  seeds: [79, 14, 55, 13],
+  "seed-to-soil": [
+    [50, 98, 2],
+    [52, 50, 48],
+  ],
+  "soil-to-fertilizer": [
+    [0, 15, 37],
+    [37, 52, 2],
+    [39, 0, 15],
+  ],
+  "fertilizer-to-water": [
+    [49, 53, 8],
+    [0, 11, 42],
+    [42, 0, 7],
+    [57, 7, 4],
+  ],
+  "water-to-light": [
+    [88, 18, 7],
+    [18, 25, 70],
+  ],
+  "light-to-temperature": [
+    [45, 77, 23],
+    [81, 45, 19],
+    [68, 64, 13],
+  ],
+  "temperature-to-humidity": [
+    [0, 69, 1],
+    [1, 0, 69],
+  ],
+  "humidity-to-location": [
+    [60, 56, 37],
+    [56, 93, 4],
+  ],
+};
+
+//console.log(map_ranges_trace_find(sample_output_correct));
+
 //console.log(simple_trace_find(formatString(sample_1_string)));
 
 fs.readFile(
@@ -197,10 +265,11 @@ fs.readFile(
     }
 
     const puzzle_object = formatString(data);
-    console.log(simple_trace_find_all_seeds(puzzle_object));
+    console.log(map_ranges_trace_find(puzzle_object));
     return;
   }
 );
 
 module.exports.handle_string = formatString;
 module.exports.find_min = simple_trace_find;
+module.exports.map_ranges = map_ranges_trace_find;

@@ -72,3 +72,6 @@ test("D5: checking string handling...", () => {
 test("D5: testing pt 1 functionality...", () => {
   expect(d5_almanac.find_min(sample_output_correct)).toBe(35);
 });
+test("D5: testing pt 2 functionality...", () => {
+  expect(d5_almanac.map_ranges(sample_output_correct)).toBe(46);
+});
