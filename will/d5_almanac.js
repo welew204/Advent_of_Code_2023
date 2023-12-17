@@ -264,8 +264,8 @@ fs.readFile(
       return;
     }
 
-    const puzzle_object = formatString(data);
-    console.log(map_ranges_trace_find(puzzle_object));
+    //const puzzle_object = formatString(data);
+    //console.log(map_ranges_trace_find(puzzle_object));
     return;
   }
 );
